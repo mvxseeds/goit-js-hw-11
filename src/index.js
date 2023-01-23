@@ -19,7 +19,7 @@ refs.load.addEventListener('click', onLoadMore);
 
 // Pass query and handle response
 async function getPictures() {
-	return response = await pixabayApi.getPictures();
+	return await pixabayApi.getPictures();
 }
 
 
