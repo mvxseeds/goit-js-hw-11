@@ -1,7 +1,6 @@
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 import PixabayAPI from './js/pixabayAPI';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 
 // class instance
@@ -19,18 +18,8 @@ refs.load.addEventListener('click', onLoadMore);
 
 
 // Pass query and handle response
-async function queryData() {
-    try {
-        const response = await pixabayApi.getPictures();
-
-        if (response.total === 0) {
-            throw Error;
-        } else {
-            return response;
-        }
-    } catch (error) {
-        Notify.failure("Sorry, there are no images matching your search query. Please try again.");
-    }
+async function getPictures() {
+	return response = await pixabayApi.getPictures();
 }
 
 
@@ -46,8 +35,9 @@ async function onSearchClick(e) {
     pixabayApi.resetPage();
     // reset gallery content
     refs.gallery.innerHTML = "";
-    refs.load.classList.toggle("visually-hidden");
-
+	// remove load-more btn if searched for empty string
+	hideLoadMore();
+	
     appendGalleryContent();
 }
 
@@ -97,7 +87,7 @@ async function appendGalleryContent() {
     const query = pixabayApi.query;
     
     if (query) {
-        const galleryData = await queryData();
+        const galleryData = await getPictures();
 
         if (galleryData) {
             const galleryMarkup = makeGalleryMarkup(galleryData);
@@ -105,10 +95,25 @@ async function appendGalleryContent() {
             // refresh lightbox after editing DOM:
             // w/o it lightbox not working!
             gallery.refresh();
-            
-            if (refs.load.classList.contains("visually-hidden")) {
-                refs.load.classList.toggle("visually-hidden");
-            }
-        }
+
+            showLoadMore();
+		// hide load more btn if no further results
+        } else {
+			hideLoadMore();
+		}
     }
+}
+
+
+function showLoadMore() {
+	if (refs.load.classList.contains("visually-hidden")) {
+        refs.load.classList.toggle("visually-hidden");
+	}
+}
+
+
+function hideLoadMore() {
+	if (!refs.load.classList.contains("visually-hidden")) {
+        refs.load.classList.toggle("visually-hidden");
+	}
 }

@@ -1,9 +1,11 @@
 import axios from 'axios';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 export default class PixabayAPI {
 	constructor() {
 		this.userQuery = '';
 		this.page = 1;
+		this.perPage = 100;
 	}
 	
 	async getPictures() {
@@ -18,18 +20,24 @@ export default class PixabayAPI {
 					orientation: "horizontal",
 					safesearch: "true",
 					page: `${this.page}`,
-					per_page: 40,
+					per_page: `${this.perPage}`,
 				}
 			  });
 	
 			if (response.data.total === 0) {
-				throw Error;
+				throw "ErrorNoResult";
+			} else if (response.data.totalHits < this.page * this.perPage) {
+				throw "ErrorOutOfRange";
 			} else {
 				this.incrementPage();
 				return response.data.hits;
 			}
 		} catch (error) {
-			Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+			if ("ErrorNoResult") {
+				Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+			} else if ("ErrorOutOfRange") {
+				Notify.failure("We're sorry, but you've reached the end of search results.");
+			}
 		}
 	}
 	
