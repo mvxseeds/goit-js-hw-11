@@ -5,7 +5,7 @@ export default class PixabayAPI {
 	constructor() {
 		this.userQuery = '';
 		this.page = 1;
-		this.perPage = 100;
+		this.perPage = 40;
 	}
 	
 	async getPictures() {
